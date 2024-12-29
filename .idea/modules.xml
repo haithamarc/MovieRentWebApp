@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/dvd-rental-customer/dvd-rental-customer.iml" filepath="$PROJECT_DIR$/dvd-rental-customer/dvd-rental-customer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dvd-rental-film/dvd-rental-film.iml" filepath="$PROJECT_DIR$/dvd-rental-film/dvd-rental-film.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dvd-rental-store/dvd-rental-store.iml" filepath="$PROJECT_DIR$/dvd-rental-store/dvd-rental-store.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dvd-rental-ui/dvd-rental-ui.iml" filepath="$PROJECT_DIR$/dvd-rental-ui/dvd-rental-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ftse-projekt.iml" filepath="$PROJECT_DIR$/.idea/ftse-projekt.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="dvd-rental-ui:war">
+    <output-path>$PROJECT_DIR$/dvd-rental-ui/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>dvd-rental-ui</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="dvd-rental-ui.war">
+      <element id="artifact" artifact-name="dvd-rental-ui:war exploded" />
+    </root>
+  </artifact>
+</component>

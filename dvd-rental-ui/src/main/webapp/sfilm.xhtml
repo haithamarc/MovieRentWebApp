@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<head>
+    <title >Anzeige Comedians </title >
+    <link rel="stylesheet" href ="style.css" type ="text/css"/>
+</head>
+<body>
+<f:view>
+    <h:outputLabel value="Wellcome to Films Store"/>
+</f:view>
+<h:form>
+     <h:dataTable value ="#{filmJSF.films}"  var="film" rowClasses="odd,even" headerClass="header" footerClass="footer">
+     <f:facet name ="header">Anzeige aller Films </f:facet>
+     <f:facet name ="footer">End</f:facet>
+      <h:column>
+      <f:facet name ="header">film_id</f:facet>
+      #{film.id}
+     </h:column>
+         <h:column>
+             <f:facet name ="header"> title  </f:facet>
+             #{film.title}
+         </h:column>
+      <h:column>
+      <f:facet name ="header">description  </f:facet>
+      #{film.description}
+      </h:column>
+         <h:column>
+             <f:facet name ="header">releaseYear  </f:facet>
+             #{film.releaseYear}
+         </h:column>
+         <h:column>
+             <f:facet name ="header">language </f:facet>
+             #{film.language}
+         </h:column>
+         <h:column>
+             <f:facet name ="header">rentalDuration  </f:facet>
+             #{film.rentalDuration}
+         </h:column>
+         <h:column>
+             <f:facet name ="header">rentalRate  </f:facet>
+             #{film.rentalRate}
+         </h:column>
+         <h:column>
+             <f:facet name ="header">length  </f:facet>
+             #{film.length}
+         </h:column>
+         <h:column>
+             <f:facet name ="header">replacementCost  </f:facet>
+             #{film.replacementCost}
+         </h:column>
+         <h:column>
+             <f:facet name ="header">rating </f:facet>
+             #{film.rating}
+         </h:column>
+
+      <h:column>
+      <h:commandButton action ="#{filmJSF.ausleihen(film.id)}"
+      value ="Ausleihen" disabled="#{filmJSF.istAusgeliehen(film.id)}"/>
+      </h:column>
+      <h:column>
+      <h:commandButton action ="#{filmJSF.loeschen(film.id, 'sfilm')}"
+      value ="Film Löschen" disabled="#{!filmJSF.istAusgeliehen(film.id)}"/>
+      </h:column>
+      </h:dataTable>
+    <h:commandButton action ="#{filmJSF.ausleihWagen}" value ="Zum Ausleihungwagen" />
+</h:form>
+</body>
+</html>

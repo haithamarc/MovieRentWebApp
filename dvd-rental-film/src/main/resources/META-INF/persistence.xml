@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Data Source Usage -->
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://xmlns.jcp.org/xml/ns/persistence         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+    <persistence-unit name="dvdrentalfilm" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <!--   name von data source  soll gleich in wildfly  -->
+        <jta-data-source>java:jboss/datasources/dvdrentalfilm</jta-data-source>
+
+
+        <!--   Hier werden die Entity angegeben welche in dieser Datenbank abgelegt sind.  -->
+        <class>dvd_rental_film.entity.Film</class>
+        <class>dvd_rental_film.entity.Actor</class>
+        <class>dvd_rental_film.entity.FilmActor</class>
+        <class>dvd_rental_film.entity.FilmCategory</class>
+        <class>dvd_rental_film.entity.Language</class>
+        <class>dvd_rental_film.entity.Category</class>
+        <!--   Da es sich um eine READ-ONLY Datenbank handelt, dÃ¼rfen/kÃ¶nnen keine weiteren
+               Klassen hier abgelegt/erzeugt werden.Ten
+                 -->
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="org.hibernate.readOnly" value="false"/>
+        </properties>
+
+    </persistence-unit>
+</persistence>

@@ -1,0 +1,13 @@
+FROM quay.io/wildfly/wildfly:26.1.2.Final-jdk17
+ENV PORT_DB=5432
+ENV NAME_DB=dvdrentalfilm
+RUN /opt/jboss/wildfly/bin/add-user.sh admin admin --silent
+RUN /bin/sh -c '/opt/jboss/wildfly/bin/standalone.sh &' && \
+    sleep 10 &&\
+    cd /tmp && \
+    curl -o postgresql-42.5.1.jar https://jdbc.postgresql.org/download/postgresql-42.5.1.jar && \
+    /opt/jboss/wildfly/bin/jboss-cli.sh --connect --command="deploy /tmp/postgresql-42.5.1.jar" && \
+    /opt/jboss/wildfly/bin/jboss-cli.sh --connect --command="data-source add --name=${NAME_DB} --jndi-name=java:jboss/datasources/${NAME_DB} --driver-name=postgresql-42.5.1.jar --connection-url=jdbc:postgresql://film-db.ftse:${PORT_DB}/${NAME_DB} --user-name=postgres --password=postgres" && \
+    /opt/jboss/wildfly/bin/jboss-cli.sh --connect --command="shutdown"
+ADD ./target/dvd-rental-film.war /opt/jboss/wildfly/standalone/deployments/
+CMD [ "/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0" ]

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view>
+    <h:outputLabel value="Hello, world"/>
+</f:view>
+
+<h:form >
+    <h:panelGrid columns ="2" headerClass="header" footerClass="footer">
+        <f:facet name="header">Film anlegen /aendern </f:facet>
+    <f:facet name ="footer">--</f:facet >
+    <h:outputLabel value ="filmId: " for="filmId"/>
+    <h:panelGroup>
+        <h:inputText id="filmId" required ="true"
+                     value ="#{filmJSF.aktuellerFilm.filmId}" />
+        <h:message for="filmId" styleClass ="message" />
+    </h:panelGroup>
+    <h:outputLabel value ="description:" for="description" />
+    <h:panelGroup>
+        <h:inputText id="description" required ="true"
+                     value ="#{filmJSF.aktuellerFilm.description}"/>
+        <h:message for="description" styleClass ="message" />
+    </h:panelGroup>
+    <h:outputLabel value ="releaseYear:" for="releaseYear" />
+    <h:panelGroup>
+        <h:inputText id="releaseYear" required ="true"
+                     value ="#{filmJSF.aktuellerFilm.releaseYear}">
+            <h:message for="releaseYear" styleClass ="message" />
+        </h:inputText >
+        <h:message for="releaseYear" styleClass ="message" />
+    </h:panelGroup>
+        <h:outputLabel value ="languageId:" for="languageId" />
+        <h:panelGroup>
+            <h:inputText id="languageId" required ="true"
+                         value ="#{filmJSF.aktuellerFilm.languageId}">
+            </h:inputText>
+            <h:message for="languageId" styleClass ="message" />
+        </h:panelGroup>
+        <h:outputLabel value ="rentalDuration:" for="rentalDuration" />
+        <h:panelGroup>
+            <h:inputText id="rentalDuration" required ="true"
+                         value ="#{filmJSF.aktuellerFilm.rentalDuration}">
+            </h:inputText>
+            <h:message for="rentalDuration" styleClass ="message" />
+        </h:panelGroup>
+        <h:outputLabel value ="rentalRate: " for="rentalRate"/>
+        <h:panelGroup>
+            <h:inputText id="rentalRate" required ="true"
+                         value ="#{filmJSF.aktuellerFilm.rentalRate}" />
+            <h:message for="rentalRate" styleClass ="message" />
+        </h:panelGroup>
+        <h:outputLabel value ="length: " for="length"/>
+        <h:panelGroup>
+            <h:inputText id="length" required ="true"
+                         value ="#{filmJSF.aktuellerFilm.length}" />
+            <h:message for="length" styleClass ="message" />
+        </h:panelGroup>
+        <h:outputLabel value ="replacementCost: " for="replacementCost"/>
+        <h:panelGroup>
+            <h:inputText id="replacementCost" required ="true"
+                         value ="#{filmJSF.aktuellerFilm.replacementCost}" />
+            <h:message for="replacementCost" styleClass ="message" />
+        </h:panelGroup>
+    <h:outputLabel value ="rating: " for="rating"/>
+    <h:panelGroup>
+        <h:inputText id="rating" required ="true"
+                     value ="#{filmJSF.aktuellerFilm.rating}" />
+        <h:message for="rating" styleClass ="message" />
+    </h:panelGroup>
+        <h:outputLabel value ="title: " for="title"/>
+        <h:panelGroup>
+            <h:inputText id="title" required ="true"
+                         value ="#{filmJSF.aktuellerFilm.title}" />
+            <h:message for="title" styleClass ="message" />
+        </h:panelGroup>
+    </h:panelGrid >
+    <h:commandButton action ="#{filmJSF.speichern}" value ="Speichern"/>
+</h:form >
+</html>

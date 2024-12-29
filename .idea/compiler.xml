@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="dvd-rental-store" />
+        <module name="dvd-rental-ui" />
+        <module name="dvd-rental-customer" />
+        <module name="dvd-rental-film" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="dvd-rental-customer" target="16" />
+      <module name="dvd-rental-film" target="16" />
+      <module name="dvd-rental-store" target="16" />
+      <module name="dvd-rental-ui" target="16" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
