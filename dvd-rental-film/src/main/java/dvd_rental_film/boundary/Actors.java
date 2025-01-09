@@ -4,131 +4,146 @@ import dvd_rental_film.boundary.json.ActorJson;
 import dvd_rental_film.boundary.json.FilmJson;
 import dvd_rental_film.control.*;
 import dvd_rental_film.entity.Actor;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Path("/actors")
+@Setter
+@Getter
+@RestController
+@RequestMapping("/actors")
 public class Actors {
-    @Inject
-    private ActorsService acs;
 
-    @Inject
-    private FilmActorService facs;
+    private final ActorsService actorsService;
+    private final FilmActorService filmActorService;
+    private final FilmService filmService;
+    private final LanguageService languageService;
+    private final CategoryService categoryService;
+    private final FilmCategoryService filmCategoryService;
+    private final UrlProperties urlProperties;
 
-    @Inject
-    private FilmService fs;
-
-    @Inject
-    private LanguageService ls;
-
-    @Inject
-    private CategoryService cs;
-
-    @Inject
-    private FilmCategoryService fcs;
-
-    @Inject
-    private UrlProperties urlProperties;
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getall() {
-        List<ActorJson> actorJsons = acs.getAll().stream().map(a -> new ActorJson(
-                new Href(urlProperties.getFilmBase() + "resources/actors/" + a.getActorId() + "/films"),
-                a.getFirstName(),
-                a.getActorId(),
-                a.getLastName()
-        )).toList();
-        return Response.ok(actorJsons).build();
+    @Autowired
+    public Actors(ActorsService actorsService, FilmActorService filmActorService, FilmService filmService,
+                  LanguageService languageService, CategoryService categoryService,
+                  FilmCategoryService filmCategoryService, UrlProperties urlProperties) {
+        this.actorsService = actorsService;
+        this.filmActorService = filmActorService;
+        this.filmService = filmService;
+        this.languageService = languageService;
+        this.categoryService = categoryService;
+        this.filmCategoryService = filmCategoryService;
+        this.urlProperties = urlProperties;
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response createActor(ActorJson actorJson) {
-        if(actorJson.firstName == null || actorJson.lastName == null) return Response.status(Response.Status.BAD_REQUEST).build();
+    @GetMapping
+    public ResponseEntity<List<ActorJson>> getAll() {
+        List<ActorJson> actorJsons = actorsService.getAll().stream()
+                .map(a -> new ActorJson(
+                        new Href(urlProperties.getFilmBase() + "actors/" + a.getActorId() + "/films"),
+                        a.getFirstName(),
+                        a.getActorId(),
+                        a.getLastName()
+                ))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(actorJsons);
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createActor(@RequestBody ActorJson actorJson) {
+        if (actorJson.getFirstName() == null || actorJson.getLastName() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         Actor actor = new Actor();
-        actor.setFirstName(actorJson.firstName);
-        actor.setLastName(actorJson.lastName);
+        actor.setFirstName(actorJson.getFirstName());
+        actor.setLastName(actorJson.getLastName());
         actor.setLastUpdate(Timestamp.from(Instant.now()));
-        acs.createActor(actor);
-        return Response.ok().build();
+        actorsService.createActor(actor);
+        return ResponseEntity.ok().build();
     }
 
-    @Path("count")
-    @GET
-    public Response count() {
-        return Response.ok(acs.countall()).build();
+    @GetMapping("/count")
+    public ResponseEntity<Long> count() {
+        return ResponseEntity.ok(actorsService.countAll());
     }
 
-    @Path("{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") int id) {
-        Actor actor = acs.getByActorID(id);
-        if(actor != null) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ActorJson> getById(@PathVariable int id) {
+        Actor actor = actorsService.getByActorID(id);
+        if (actor != null) {
             ActorJson actorJson = new ActorJson(
-                    new Href(urlProperties.getFilmBase() + "resources/actors/" + actor.getActorId() + "/films"),
+                    new Href(urlProperties.getFilmBase() + "actors/" + actor.getActorId() + "/films"),
                     actor.getFirstName(),
                     actor.getActorId(),
                     actor.getLastName()
             );
-            return Response.ok(actorJson).build();
+            return ResponseEntity.ok(actorJson);
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return ResponseEntity.notFound().build();
     }
 
-    @Path("{id}")
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") int id, ActorJson actorJson){
-        Actor act = acs.getByActorID(id);
-        if(act == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } else if(actorJson.firstName == null || actorJson.lastName == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable int id, @RequestBody ActorJson actorJson) {
+        Actor actor = actorsService.getByActorID(id);
+        if (actor == null) {
+            return ResponseEntity.notFound().build();
+        } else if (actorJson.getFirstName() == null || actorJson.getLastName() == null) {
+            return ResponseEntity.badRequest().build();
         } else {
-            act.setFirstName(actorJson.firstName);
-            act.setLastName(actorJson.lastName);
-            act.setLastUpdate(Timestamp.from(Instant.now()));
-            acs.updateActor(act);
-            return Response.ok().build();
+            actor.setFirstName(actorJson.getFirstName());
+            actor.setLastName(actorJson.getLastName());
+            actor.setLastUpdate(Timestamp.from(Instant.now()));
+            actorsService.updateActor(actor);
+            return ResponseEntity.ok().build();
         }
     }
 
-    @Path("{id}")
-    @DELETE
-    public Response delete(@PathParam("id") int id) {
-        Actor actor = acs.getByActorID(id);
-        if(actor != null) {
-            acs.delete(actor);
-            return Response.ok().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        Actor actor = actorsService.getByActorID(id);
+        if (actor != null) {
+            actorsService.deleteActor(actor);
+            return ResponseEntity.ok().build();
         }
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return ResponseEntity.notFound().build();
     }
 
-    @GET
-    @Path("{id}/films")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getallActorfilms(@PathParam("id") int id) {
-        List<FilmJson> films = facs.getFilmIdListByActorId(id).stream().map(fId -> fs.getByFilmID(fId)).map(film -> new FilmJson(
-                new Href(urlProperties.getFilmBase() + "resources/films/" + film.getFilmId() + "/actors"),
-                fcs.getCategoryIdByFilmId(film.getFilmId()).stream().map(cId -> cs.getNameById(cId)).toList(),
-                film.getDescription(),
-                film.getFilmId(),
-                ls.getNameById(film.getLanguageId()),
-                film.getLength(),
-                film.getRating(),
-                film.getReleaseYear(),
-                film.getRentalDuration(),
-                film.getRentalRate(),
-                film.getReplacementCost(),
-                film.getTitle()
-        )).toList();
-        return acs.getByActorID(id) != null ? Response.ok(films).build() : Response.status(Response.Status.NOT_FOUND).build();
-    }
+    @GetMapping("/{id}/films")
+    public ResponseEntity<List<FilmJson>> getAllActorFilms(@PathVariable int id) {
+        // Ensure the actor exists
+        if (actorsService.getByActorID(id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Process the films associated with the actor
+        List<FilmJson> films = filmActorService.getFilmIdListByActorId(id).stream()
+                .map(filmId -> filmService.getByFilmID(filmId)
+                        .orElseThrow(() -> new RuntimeException("Film not found with ID: " + filmId)))
+                .map(film -> new FilmJson(
+                        new Href(urlProperties.getFilmBase() + "films/" + film.getFilmId() + "/actors"),
+                        filmCategoryService.getCategoryIdByFilmId(film.getFilmId()).stream()
+                                .map(categoryService::getNameById)
+                                .collect(Collectors.toList()),
+                        film.getDescription(),
+                        film.getFilmId(),
+                        languageService.getNameById(film.getLanguageId()),
+                        film.getLength(),
+                        film.getRating(),
+                        film.getReleaseYear(),
+                        film.getRentalDuration(),
+                        film.getRentalRate(),
+                        film.getReplacementCost(),
+                        film.getTitle()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(films);
 }
+}
+

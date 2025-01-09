@@ -2,27 +2,33 @@ package dvd_rental_film.control;
 
 import dvd_rental_film.entity.Category;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Stateless
+import dvd_rental_film.repository.CategoryRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
 public class CategoryService {
-    @PersistenceContext(unitName = "dvdrentalfilm") // name aus persist.xml : unit
-    private EntityManager em;
 
+    private final CategoryRepository categoryRepository;
+
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Transactional(readOnly = true)
     public List<Category> getAll() {
-        return    em.createNamedQuery("cat.getAll", Category.class).getResultList();
+        return categoryRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Category getById(int id) {
-        return em.find(Category.class, id);
+        return categoryRepository.findById(id).orElse(null);
     }
 
+    @Transactional(readOnly = true)
     public String getNameById(int id) {
-        return em.find(Category.class, id).getName();
+        return categoryRepository.findById(id).map(Category::getName).orElse(null);
     }
 }
-
-

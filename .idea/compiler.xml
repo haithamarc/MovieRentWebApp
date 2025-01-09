@@ -15,9 +15,14 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="dvd-rental-customer" target="16" />
-      <module name="dvd-rental-film" target="16" />
+      <module name="dvd-rental-film" target="11" />
       <module name="dvd-rental-store" target="16" />
       <module name="dvd-rental-ui" target="16" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="dvd-rental-film" options="-parameters" />
+    </option>
   </component>
 </project>

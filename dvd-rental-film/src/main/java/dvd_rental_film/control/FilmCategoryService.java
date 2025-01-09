@@ -1,31 +1,35 @@
 package dvd_rental_film.control;
 
 import dvd_rental_film.entity.FilmCategory;
+import dvd_rental_film.repository.FilmCategoryRepository;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Stateless
+@Service
 public class FilmCategoryService {
-    @PersistenceContext(unitName = "dvdrentalfilm") // name aus persist.xml : unit
-    private EntityManager em;
-    public void  filmCategBinden (int fid,int aid){
-        FilmCategory ac =new FilmCategory() ;
-        ac.setCategoryId(aid);
-        ac.setFilmId(fid);
-        try {
-            em.persist(ac);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+
+    private final FilmCategoryRepository filmCategoryRepository;
+
+    public FilmCategoryService(FilmCategoryRepository filmCategoryRepository) {
+        this.filmCategoryRepository = filmCategoryRepository;
     }
 
-    public List<Integer> getCategoryIdByFilmId(int fId) {
-        TypedQuery<Integer> query = em.createQuery("select fc.categoryId from FilmCategory fc where fc.filmId = :filmId", Integer.class);
-        query.setParameter("filmId", fId);
-        return query.getResultList();
+    @Transactional
+    public void bindFilmToCategory(int filmId, int categoryId) {
+        FilmCategory filmCategory = new FilmCategory();
+        filmCategory.setCategoryId(categoryId);
+        filmCategory.setFilmId(filmId);
+        filmCategoryRepository.save(filmCategory);
+    }
+
+    public List<Integer> getCategoryIdByFilmId(int filmId) {
+        List<FilmCategory> filmCategories = filmCategoryRepository.findByFilmId(filmId);
+        return filmCategories.stream()
+                .map(FilmCategory::getCategoryId)
+                .collect(Collectors.toList());
     }
 }

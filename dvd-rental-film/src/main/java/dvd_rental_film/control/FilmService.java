@@ -1,46 +1,63 @@
 package dvd_rental_film.control;
 
-import dvd_rental_film.entity.Category;
 import dvd_rental_film.entity.Film;
-
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
+import dvd_rental_film.repository.FilmRepository;
+import dvd_rental_film.repository.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
-@Transactional
-@Stateless
-public class FilmService  {
-    @PersistenceContext(unitName = "dvdrentalfilm") // name aus persist.xml : unit
-    private EntityManager em;
-    public Film getByFilmID(int id) {
-        return em.find(Film.class, id);
+import java.util.Optional;
+
+@Service
+public class FilmService {
+
+    @Autowired
+    private FilmRepository filmRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    public Optional<Film> getByFilmID(int id) {
+        return filmRepository.findById(id);
     }
 
     public List<Film> getAll() {
-        TypedQuery<Film> query = em.createNamedQuery("film.getAll", Film.class);
-        return query.getResultList() ;
-    }
-    public Film mergeFilm(Film film) {
-        return em.merge(film);
-    }
-    public void updateFilm(@NotNull Film film) {
-        em.merge(film);
-    }
-    public int  countall(){
-        return ((Number)em.createNamedQuery("film.countAll").getSingleResult()).intValue();
-    }
-    public void delete(Film film) {
-        em.remove(em.merge(film));
-    }
-    public List<Category> getAllCateg(int id) {
-        TypedQuery<Category> query = em.createNamedQuery("film.Category", Category.class);
-        return query.getResultList() ;
+        return filmRepository.findAll();
     }
 
+    public Film saveOrUpdateFilm(Film film) {
+        return filmRepository.save(film);
+    }
+
+    public Film mergeFilm(Film film) {
+        return filmRepository.save(film);
+    }
+
+    public Film updateFilm(Film film) {
+        Film currentFilm = filmRepository.findById(film.getFilmId())
+                .orElseThrow(() -> new RuntimeException("Film not found with ID: " + film.getFilmId()));
+
+        currentFilm.setTitle(film.getTitle());
+        currentFilm.setDescription(film.getDescription());
+        currentFilm.setReleaseYear(film.getReleaseYear());
+        currentFilm.setCategories(film.getCategories());
+
+        return filmRepository.save(currentFilm);
+    }
+
+    public void deleteFilm(Film film) {
+        filmRepository.delete(film);
+    }
+
+    public long countAll() {
+        return filmRepository.count();
+    }
+
+
     public List<Film> getAllLimitOffset(int limit, int offset) {
-        return em.createNamedQuery("film.getAll", Film.class).setFirstResult(offset).setMaxResults(limit).getResultList();
+        Pageable pageable = PageRequest.of(offset, limit); // offset is the page number
+        return filmRepository.findAllWithPagination(pageable);
     }
 }

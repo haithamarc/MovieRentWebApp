@@ -1,44 +1,54 @@
 package dvd_rental_film.control;
 
-import dvd_rental_film.entity.Actor;
 import dvd_rental_film.entity.FilmActor;
+import dvd_rental_film.repository.FilmActorRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import java.util.List;
 
-@Stateless
+@Service
 public class FilmActorService {
-    @PersistenceContext(unitName = "dvdrentalfilm") // name aus persist.xml : unit
-    private EntityManager em;
-    public Actor getByActorID(int id) {
-        TypedQuery<Actor> query = em.createNamedQuery("actor.getByActorID", Actor.class);
-        query.setParameter("actor_id", id);
-        return query.getSingleResult();
-    }
-    public List<Integer> getFilmIdListByActorId(int id) {
-        TypedQuery<Integer> query = em.createQuery("select e.filmId from FilmActor e where e.actorId = :actorId", Integer.class);
-        query.setParameter("actorId", id);
-        return query.getResultList();
+
+    private final FilmActorRepository filmActorRepository;
+
+    public FilmActorService(FilmActorRepository filmActorRepository) {
+        this.filmActorRepository = filmActorRepository;
     }
 
-    public List<Integer> getActorIdListByFilmId(int id) {
-        TypedQuery<Integer> query = em.createQuery("select e.actorId from FilmActor e where e.filmId = :filmId", Integer.class);
-        query.setParameter("filmId", id);
-        return query.getResultList();
+    /**
+     * Retrieves a list of Film IDs associated with a specific Actor ID.
+     *
+     * @param actorId the Actor ID
+     * @return a list of Film IDs
+     */
+    @Transactional(readOnly = true)
+    public List<Integer> getFilmIdListByActorId(int actorId) {
+        return filmActorRepository.findFilmIdsByActorId(actorId);
     }
 
-    public void  filmActorBinden (int fid,int aid){
-        FilmActor ac = new FilmActor() ;
-        ac.setActorId(aid);
-        ac.setFilmId(fid);
-        try {
-            em.persist(ac);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+    /**
+     * Retrieves a list of Actor IDs associated with a specific Film ID.
+     *
+     * @param filmId the Film ID
+     * @return a list of Actor IDs
+     */
+    @Transactional(readOnly = true)
+    public List<Integer> getActorIdListByFilmId(int filmId) {
+        return filmActorRepository.findActorIdsByFilmId(filmId);
     }
 
+    /**
+     * Binds a Film and Actor by creating an association in the FilmActor table.
+     *
+     * @param filmId  the ID of the film
+     * @param actorId the ID of the actor
+     */
+    @Transactional
+    public void bindFilmAndActor(int filmId, int actorId) {
+        FilmActor filmActor = new FilmActor();
+        filmActor.setFilmId(filmId);
+        filmActor.setActorId(actorId);
+        filmActorRepository.save(filmActor);
+    }
 }

@@ -97,8 +97,8 @@ public class FilmJSF implements Serializable {
     @PostConstruct
     public void init()  {
         System.out.println(customerBase);
-        WebTarget target = client.target("http://localhost:8080/dvd-rental-film/resources/films");
-        films = binding.fromJson(target.request().get().readEntity(String.class), new ArrayList<FilmJson>(){}.getClass().getGenericSuperclass());
+       WebTarget target = client.target("http://localhost:8080/dvd-rental-film/resources/films");
+       films = binding.fromJson(target.request().get().readEntity(String.class), new ArrayList<FilmJson>(){}.getClass().getGenericSuperclass());
     }
    /* die rechtige daten Quelle
     public DataModel<Film> getComedians() throws MalformedURLException {

@@ -2,34 +2,33 @@ package dvd_rental_film.control;
 
 import dvd_rental_film.entity.Language;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import dvd_rental_film.repository.LanguageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-@Stateless
+@Service
 public class LanguageService {
-    @PersistenceContext(unitName = "dvdrentalfilm") // name aus persist.xml : unit
-    private EntityManager em;
+
+    private final LanguageRepository languageRepository;
+
+    @Autowired
+    public LanguageService(LanguageRepository languageRepository) {
+        this.languageRepository = languageRepository;
+    }
 
     public List<Language> getAll() {
-        TypedQuery<Language> query = em.createNamedQuery("language.getAll", Language.class);
-        return query.getResultList() ;
+        return languageRepository.findAll();
     }
 
     public String getNameById(int id) {
-        return em.find(Language.class, id).getName();
+        return languageRepository.findById(id)
+                .map(Language::getName)
+                .orElse(null);  // Return null if no language is found
     }
 
     public int getIdByName(String name) {
-        try {
-            return em.createQuery("select l.id from Language l where l.name = :name", Integer.class)
-                    .setParameter("name", name)
-                    .getSingleResult();
-        } catch(NoResultException e) {
-            return 1;
-        }
+        return languageRepository.findIdByName(name);  // Return 1 if no result is found
     }
 }

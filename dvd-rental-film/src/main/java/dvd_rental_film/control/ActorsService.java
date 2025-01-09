@@ -1,59 +1,51 @@
 package dvd_rental_film.control;
 
 import dvd_rental_film.entity.Actor;
+import dvd_rental_film.repository.ActorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
-
-@Stateless
+@Service
 public class ActorsService {
-    @PersistenceContext(unitName = "dvdrentalfilm") // name aus persist.xml : unit
-    private EntityManager em;
 
+    private final ActorRepository actorRepository;
 
-
-    public Class<Actor> getEntityClass() {
-        return Actor.class;
-    }
-
-    public EntityManager getEntityManager() {
-        return em;
+    @Autowired
+    public ActorsService(ActorRepository actorRepository) {
+        this.actorRepository = actorRepository;
     }
 
     public Actor getByActorID(int id) {
-        return em.find(Actor.class, id);
+        return actorRepository.findById(id).orElse(null);  // Return null if actor is not found
     }
 
     public List<Actor> getAll() {
-        TypedQuery<Actor> query = em.createNamedQuery("actor.getAll", Actor.class);
-        return query.setMaxResults(100).getResultList();
-    }
-    public List<Actor> getByFilmId(int id) {
-        TypedQuery<Actor> query = em.createNamedQuery("actor.film", Actor.class);
-        query.setParameter("id", id);
-        return query.getResultList() ;
-    }
-    public void createActor(Actor ac) {
-        em.persist(ac);
-    }
-    public void updateActor(@NotNull Actor ac) {
-        em.merge(ac);
+        return actorRepository.findAll();
     }
 
-    public void delete(Actor actor) {
-        em.remove(em.merge(actor));
+    public List<Actor> getByFilmId(int filmId) {
+        return actorRepository.findByFilmId(filmId);
     }
-    public int  countall(){
-        return ((Number)em.createNamedQuery("actor.countAll").getSingleResult()).intValue();
+
+    public void createActor(Actor actor) {
+        actorRepository.save(actor);  // Will persist or update actor if exists
     }
-    public List<Actor> getAlloffilm(int id ) {
-        TypedQuery<Actor> query = em.createNamedQuery("actor.film", Actor.class);
-        query.setParameter("id", id);
-        return query.getResultList() ;
+
+    public void updateActor(Actor actor) {
+        actorRepository.save(actor);  // This will automatically update if the actor exists
+    }
+
+    public void deleteActor(Actor actor) {
+        actorRepository.delete(actor);  // Delete the actor from the database
+    }
+
+    public long countAll() {
+        return actorRepository.count();  // Get the count of all actors
+    }
+
+    public List<Actor> getAllByFilmId(int filmId) {
+        return actorRepository.findByFilmId(filmId);
     }
 }

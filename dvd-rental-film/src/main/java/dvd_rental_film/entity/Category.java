@@ -6,28 +6,32 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
 
-@NamedQuery(name = "cat.getAll", query = "select c from Category c")
 @Entity
+@Table(name = "category")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "category")
+@NamedQuery(name = "cat.getAll", query = "SELECT c FROM Category c")
 public class Category {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private int categoryId;
-    @Column(name = "name")
-    private String  name ;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @UpdateTimestamp
-    @Column(name = "last_update")
-    private Timestamp lastUpdate; // TIMESTAMP(6) ?
+    @Column(name = "last_update", nullable = false)
+    private Timestamp lastUpdate;
 
-    @ManyToMany(mappedBy="categorm")
-    private List<Film> films ;
-
+    @ManyToMany(mappedBy = "categories")
+    private List<Film> films;
 }
